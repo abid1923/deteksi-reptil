@@ -1,5 +1,5 @@
 import streamlit as st
-from services.detection_service import detect_image, log_detection
+from services.detection_service import detect_image
 from services.history_service import save_detection_history
 from services.quiz_service import get_quiz_questions, get_reptile_fact
 from utils.image_utils import resize_image
@@ -50,7 +50,7 @@ def show_detection_page():
 
                     if result_image is None:
                         st.warning("⚠️ Gambar tidak terdeteksi sebagai reptil")
-                        log_detection(uploaded_file.name, [])
+                        save_detection_history(st.session_state.username, "Tidak terdeteksi", 0.0)
                         return
 
                     st.session_state.detected_classes = detected_classes
@@ -66,11 +66,9 @@ def show_detection_page():
                     save_detection_history(st.session_state.username, label, conf)
                 st.session_state.detection_saved = True
 
-            # Tampilkan semua hasil deteksi
             for label, conf in st.session_state.detected_classes:
                 st.write(f"- {label} (Confidence: {conf:.2f})")
 
-            # Tampilkan fakta & kuis hanya sekali per label unik
             seen_labels = set()
             for idx, (label, conf) in enumerate(st.session_state.detected_classes):
                 if label in seen_labels:
@@ -124,7 +122,6 @@ def show_detection_page():
                                     for i, q in enumerate(questions):
                                         user_answer = quiz_state['answers'].get(i)
                                         correct_answer = str(q['jawaban_benar']).strip().upper()
-
                                         if user_answer == correct_answer:
                                             score += 1
                                             st.write(f"✅ Pertanyaan {i+1}: Benar!")
@@ -156,6 +153,3 @@ def show_detection_page():
                                 'answers': {}
                             }
                             st.rerun()
-                else:
-                    st.warning("Tidak ada reptil yang terdeteksi dalam gambar")
-                    log_detection(uploaded_file.name, [])
