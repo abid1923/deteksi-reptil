@@ -1,6 +1,6 @@
 streamlit
 ultralytics
 opencv-python
-Pillow
+pillow
 pandas
 mysql-connector-python
