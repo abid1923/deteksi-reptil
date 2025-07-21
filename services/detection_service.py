@@ -35,3 +35,5 @@ def detect_image(image_file, conf_threshold):
         return None, []
 
     return results[0].plot(), detected_classes
+
+# rebuild trigger
